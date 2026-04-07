@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loonmeter</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #060608;
+    --card: #0f0f12;
+    --border: #1e1e26;
+    --green: #00e87a;
+    --green2: #00ff8818;
+    --yellow: #ffc840;
+    --red: #ff4040;
+    --muted: #3a3a4a;
+    --soft: #888;
+    --text: #f0f0f4;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    gap: 14px;
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-align: center;
+  }
+  .wage-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 11px 18px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .wage-row label { font-size: 0.68rem; letter-spacing: 0.1em; color: var(--soft); text-transform: uppercase; white-space: nowrap; }
+  .wage-input-wrap { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .wage-input-wrap .sym { font-size: 1rem; color: var(--yellow); }
+  .wage-input-wrap .unit { color: var(--muted); font-size: 0.72rem; }
+  input[type="number"] {
+    background: transparent; border: none; outline: none;
+    color: var(--text); font-family: 'DM Mono', monospace;
+    font-size: 1.1rem; font-weight: 500; width: 70px; text-align: right;
+  }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .modes { display: flex; gap: 8px; width: 100%; max-width: 380px; }
+  .mode-btn {
+    flex: 1; padding: 7px 0;
+    border: 1px solid var(--border); border-radius: 999px;
+    background: transparent; color: var(--muted);
+    font-family: 'DM Mono', monospace; font-size: 0.67rem;
+    letter-spacing: 0.07em; cursor: pointer; transition: all 0.15s;
+  }
+  .mode-btn.active { background: var(--green2); border-color: var(--green); color: var(--green); }
+
+  .main-card {
+    width: 100%; max-width: 380px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 28px 24px 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    position: relative; overflow: hidden;
+  }
+  .main-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% -10%, #00e87a0d 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .total-label { font-size: 0.65rem; letter-spacing: 0.16em; color: var(--soft); text-transform: uppercase; margin-bottom: 2px; }
+  .total-value { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4.5rem, 20vw, 7rem); line-height: 1; color: var(--green); text-shadow: 0 0 60px #00e87a44; letter-spacing: 0.01em; }
+  .divider { width: 36px; height: 1px; background: var(--border); margin: 10px 0 6px; }
+  .rate-label { font-size: 0.63rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .rate-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; color: var(--yellow); letter-spacing: 0.05em; opacity: 0.9; }
+
+  .progress-wrap { width: 100%; max-width: 380px; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), #00ffaa); border-radius: 99px; box-shadow: 0 0 6px var(--green); }
+
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; max-width: 380px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 11px 8px; text-align: center; }
+  .stat .s-lbl { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .stat .s-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--text); }
+
+  .btn-row { display: flex; gap: 10px; width: 100%; max-width: 380px; }
+  .btn { flex: 1; padding: 14px 0; border: none; border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.97); }
+  .btn-start { background: var(--green); color: #000; flex: 2; }
+  .btn-start.paused { background: var(--green2); color: var(--green); border: 1px solid var(--green); }
+  .btn-reset { background: #13131a; color: var(--soft); border: 1px solid var(--border); }
+  .btn-reset:hover { color: var(--red); border-color: #ff404044; }
+
+  .status-row { display: flex; align-items: center; gap: 7px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); transition: all 0.3s; }
+  .dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  .status-txt { font-size: 0.63rem; letter-spacing: 0.12em; color: var(--soft); text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="header"><h1>Loonmeter</h1></div>
+
+<div class="wage-row">
+  <label>Uurloon</label>
+  <div class="wage-input-wrap">
+    <span class="sym">€</span>
+    <input type="number" id="wage" value="7" min="0.01" step="0.01">
+    <span class="unit">/ uur</span>
+  </div>
+</div>
+
+<div class="modes">
+  <button class="mode-btn" data-mode="ms">Millisec.</button>
+  <button class="mode-btn active" data-mode="s">Seconde</button>
+  <button class="mode-btn" data-mode="m">Minuut</button>
+</div>
+
+<div class="main-card">
+  <div class="total-label">Totaal verdiend</div>
+  <div class="total-value" id="totalValue">€0.0000</div>
+  <div class="divider"></div>
+  <div class="rate-label" id="rateLabel">per seconde</div>
+  <div class="rate-value" id="rateValue">€0.000000</div>
+</div>
+
+<div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="stats-row">
+  <div class="stat"><div class="s-lbl">Per minuut</div><div class="s-val" id="perMin">€0.00</div></div>
+  <div class="stat"><div class="s-lbl">Per uur</div><div class="s-val" id="perHour">€0.00</div></div>
+  <div class="stat"><div class="s-lbl">Tijd actief</div><div class="s-val" id="elapsed">0:00</div></div>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-reset" id="resetBtn">↺ Reset</button>
+  <button class="btn btn-start" id="startBtn">▶ Start</button>
+</div>
+
+<div class="status-row">
+  <span class="dot" id="dot"></span>
+  <span class="status-txt" id="statusTxt">Gestopt</span>
+</div>
+
+<script>
+let mode = 's', running = false, rafId = null;
+let startTime = null, pausedTotal = 0, pausedElapsedMs = 0, lastTick = null;
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    refreshRate();
+  });
+});
+
+document.getElementById('startBtn').addEventListener('click', () => running ? doPause() : doStart());
+document.getElementById('resetBtn').addEventListener('click', doReset);
+document.getElementById('wage').addEventListener('input', refreshRate);
+
+function doStart() {
+  const w = parseFloat(document.getElementById('wage').value);
+  if (isNaN(w) || w <= 0) return;
+  running = true;
+  startTime = performance.now();
+  lastTick = startTime;
+  setUI(true);
+  loop();
+}
+
+function doPause() {
+  running = false;
+  cancelAnimationFrame(rafId);
+  pausedTotal = currentTotal();
+  pausedElapsedMs += performance.now() - startTime;
+  setUI(false);
+}
+
+function doReset() {
+  running = false;
+  cancelAnimationFrame(rafId);
+  pausedTotal = 0; pausedElapsedMs = 0; startTime = null; lastTick = null;
+  setUI(false);
+  document.getElementById('totalValue').textContent = '€0.0000';
+  document.getElementById('elapsed').textContent = '0:00';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('statusTxt').textContent = 'Gestopt';
+  refreshRate();
+}
+
+function currentTotal() {
+  const w = parseFloat(document.getElementById('wage').value) || 0;
+  const perSec = w / 3600;
+  return pausedTotal + perSec * ((performance.now() - startTime) / 1000);
+}
+
+function setUI(live) {
+  const btn = document.getElementById('startBtn');
+  btn.textContent = live ? '⏸ Pauze' : '▶ Start';
+  live ? btn.classList.add('paused') : btn.classList.remove('paused');
+  live ? document.getElementById('dot').classList.add('live') : document.getElementById('dot').classList.remove('live');
+  if (!live && (pausedTotal > 0 || pausedElapsedMs > 0)) document.getElementById('statusTxt').textContent = 'Gepauzeerd';
+  else if (live) document.getElementById('statusTxt').textContent = 'Live aan het tellen…';
+}
+
+function refreshRate() {
+  const w = parseFloat(document.getElementById('wage').value) || 0;
+  const ps = w / 3600;
+  const cfg = { ms: ['per milliseconde', ps/1000, 9], s: ['per seconde', ps, 6], m: ['per minuut', ps*60, 4] }[mode];
+  document.getElementById('rateLabel').textContent = cfg[0];
+  document.getElementById('rateValue').textContent = '€' + cfg[1].toFixed(cfg[2]);
+  document.getElementById('perMin').textContent = '€' + (ps*60).toFixed(4);
+  document.getElementById('perHour').textContent = '€' + w.toFixed(2);
+}
+
+refreshRate();
+
+function loop() {
+  if (!running) return;
+  const now = performance.now();
+  const total = currentTotal();
+
+  document.getElementById('totalValue').textContent = '€' + total.toFixed(4);
+  refreshRate();
+
+  document.getElementById('progressFill').style.width = ((now / 1000 % 1) * 100) + '%';
+
+  const ms = pausedElapsedMs + (now - startTime);
+  const s = Math.floor(ms / 1000);
+  document.getElementById('elapsed').textContent = Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+
+  rafId = requestAnimationFrame(loop);
+}
+</script>
+
+</body>
+</html>
