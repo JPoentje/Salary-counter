@@ -109,7 +109,6 @@ pointer-events: none;
 .btn-start.paused { background: var(--green2); color: var(--green); border: 1px solid var(--green); }
 .btn-reset { background: #13131a; color: var(--soft); border: 1px solid var(--border); }
 .btn-reset:hover { color: var(--red); border-color: #ff404044; }
-.btn-fun { background: #ffc840; color: #000; flex: 1; border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.1em; }
 
 /* Status */
 .status-row { display: flex; align-items: center; gap: 7px; }
@@ -157,7 +156,6 @@ pointer-events: none;
 <div class="btn-row">
   <button class="btn btn-reset" id="resetBtn">↺ Reset</button>
   <button class="btn btn-start" id="startBtn">▶ Start</button>
-  <button class="btn btn-fun" id="funBtn">✨ Fun Boost</button>
 </div>
 
 <div class="status-row">
@@ -188,9 +186,6 @@ pointer-events: none;
   document.getElementById('startBtn').addEventListener('click', () => running ? doPause() : doStart());
   document.getElementById('resetBtn').addEventListener('click', doReset);
   wageInput.addEventListener('input', refreshRate);
-  document.getElementById('funBtn').addEventListener('click', () => {
-    pausedTotal *= 1 + Math.random(); // random fun multiplier
-  });
 
   function doStart() {
     const w = parseWage();
