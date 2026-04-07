@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loonmeter</title>
+<title>Salary Counter</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -117,22 +117,22 @@
 <div class="header"><h1>Loonmeter</h1></div>
 
 <div class="wage-row">
-  <label>Uurloon</label>
+  <label>hourly wage</label>
   <div class="wage-input-wrap">
     <span class="sym">€</span>
     <input type="number" id="wage" value="7" min="0.01" step="0.01">
-    <span class="unit">/ uur</span>
+    <span class="unit">/ hour</span>
   </div>
 </div>
 
 <div class="modes">
   <button class="mode-btn" data-mode="ms">Millisec.</button>
-  <button class="mode-btn active" data-mode="s">Seconde</button>
-  <button class="mode-btn" data-mode="m">Minuut</button>
+  <button class="mode-btn active" data-mode="s">Second</button>
+  <button class="mode-btn" data-mode="m">Minute</button>
 </div>
 
 <div class="main-card">
-  <div class="total-label">Totaal verdiend</div>
+  <div class="total-label">total earned</div>
   <div class="total-value" id="totalValue">€0.0000</div>
   <div class="divider"></div>
   <div class="rate-label" id="rateLabel">per seconde</div>
@@ -148,7 +148,7 @@
 </div>
 
 <div class="btn-row">
-  <button class="btn btn-reset" id="resetBtn">↺ Reset</button>
+  <button class="btn btn-reset" id="resetBtn">↺ reset</button>
   <button class="btn btn-start" id="startBtn">▶ Start</button>
 </div>
 
@@ -212,17 +212,17 @@ function currentTotal() {
 
 function setUI(live) {
   const btn = document.getElementById('startBtn');
-  btn.textContent = live ? '⏸ Pauze' : '▶ Start';
+  btn.textContent = live ? '⏸ Pause' : '▶ Start';
   live ? btn.classList.add('paused') : btn.classList.remove('paused');
   live ? document.getElementById('dot').classList.add('live') : document.getElementById('dot').classList.remove('live');
-  if (!live && (pausedTotal > 0 || pausedElapsedMs > 0)) document.getElementById('statusTxt').textContent = 'Gepauzeerd';
-  else if (live) document.getElementById('statusTxt').textContent = 'Live aan het tellen…';
+  if (!live && (pausedTotal > 0 || pausedElapsedMs > 0)) document.getElementById('statusTxt').textContent = 'paused';
+  else if (live) document.getElementById('statusTxt').textContent = 'Counting live…';
 }
 
 function refreshRate() {
   const w = parseFloat(document.getElementById('wage').value) || 0;
   const ps = w / 3600;
-  const cfg = { ms: ['per milliseconde', ps/1000, 9], s: ['per seconde', ps, 6], m: ['per minuut', ps*60, 4] }[mode];
+  const cfg = { ms: ['per millisecond', ps/1000, 9], s: ['per second', ps, 6], m: ['per minute', ps*60, 4] }[mode];
   document.getElementById('rateLabel').textContent = cfg[0];
   document.getElementById('rateValue').textContent = '€' + cfg[1].toFixed(cfg[2]);
   document.getElementById('perMin').textContent = '€' + (ps*60).toFixed(4);
