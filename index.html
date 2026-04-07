@@ -53,12 +53,11 @@
   .wage-input-wrap { display: flex; align-items: center; gap: 6px; margin-left: auto; }
   .wage-input-wrap .sym { font-size: 1rem; color: var(--yellow); }
   .wage-input-wrap .unit { color: var(--muted); font-size: 0.72rem; }
-  input[type="number"] {
+  input[type="text"] {
     background: transparent; border: none; outline: none;
     color: var(--text); font-family: 'DM Mono', monospace;
     font-size: 1.1rem; font-weight: 500; width: 70px; text-align: right;
   }
-  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
   /* Mode pills */
   .modes { display: flex; gap: 8px; width: 100%; max-width: 380px; }
   .mode-btn {
@@ -86,24 +85,11 @@ position: absolute; inset: 0;
 background: radial-gradient(ellipse at 50% -10%, #00e87a0d 0%, transparent 65%);
 pointer-events: none;
 }
-.total-label {
-font-size: 0.65rem; letter-spacing: 0.16em;
-color: var(--soft); text-transform: uppercase; margin-bottom: 2px;
-}
-.total-value {
-font-family: 'Bebas Neue', sans-serif;
-font-size: clamp(4.5rem, 20vw, 7rem);
-line-height: 1; color: var(--green);
-text-shadow: 0 0 60px #00e87a44;
-letter-spacing: 0.01em;
-}
+.total-label { font-size: 0.65rem; letter-spacing: 0.16em; color: var(--soft); text-transform: uppercase; margin-bottom: 2px; }
+.total-value { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4.5rem, 20vw, 7rem); line-height: 1; color: var(--green); text-shadow: 0 0 60px #00e87a44; letter-spacing: 0.01em; }
 .divider { width: 36px; height: 1px; background: var(--border); margin: 10px 0 6px; }
 .rate-label { font-size: 0.63rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
-.rate-value {
-font-family: 'Bebas Neue', sans-serif;
-font-size: 1.9rem; color: var(--yellow);
-letter-spacing: 0.05em; opacity: 0.9;
-}
+.rate-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; color: var(--yellow); letter-spacing: 0.05em; opacity: 0.9; }
 
 /* Progress */
 .progress-wrap { width: 100%; max-width: 380px; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
@@ -117,16 +103,13 @@ letter-spacing: 0.05em; opacity: 0.9;
 
 /* Buttons */
 .btn-row { display: flex; gap: 10px; width: 100%; max-width: 380px; }
-.btn {
-flex: 1; padding: 14px 0; border: none; border-radius: 14px;
-font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem;
-letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.1s;
-}
+.btn { flex: 1; padding: 14px 0; border: none; border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
 .btn:active { transform: scale(0.97); }
 .btn-start { background: var(--green); color: #000; flex: 2; }
 .btn-start.paused { background: var(--green2); color: var(--green); border: 1px solid var(--green); }
 .btn-reset { background: #13131a; color: var(--soft); border: 1px solid var(--border); }
 .btn-reset:hover { color: var(--red); border-color: #ff404044; }
+.btn-fun { background: #ffc840; color: #000; flex: 1; border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.1em; }
 
 /* Status */
 .status-row { display: flex; align-items: center; gap: 7px; }
@@ -135,7 +118,6 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 .status-txt { font-size: 0.63rem; letter-spacing: 0.12em; color: var(--soft); text-transform: uppercase; }
 </style>
-
 </head>
 <body>
 
@@ -145,7 +127,7 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
   <label>Hourly wage</label>
   <div class="wage-input-wrap">
     <span class="sym">€</span>
-    <input type="number" id="wage" value="7" min="0.01" step="0.01">
+    <input type="text" id="wage" value="7.00">
     <span class="unit">/ hour</span>
   </div>
 </div>
@@ -175,6 +157,7 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
 <div class="btn-row">
   <button class="btn btn-reset" id="resetBtn">↺ Reset</button>
   <button class="btn btn-start" id="startBtn">▶ Start</button>
+  <button class="btn btn-fun" id="funBtn">✨ Fun Boost</button>
 </div>
 
 <div class="status-row">
@@ -185,6 +168,13 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
 <script>
   let mode = 's', running = false, rafId = null;
   let startTime = null, pausedTotal = 0, pausedElapsedMs = 0, lastTick = null;
+
+  const wageInput = document.getElementById('wage');
+
+  function parseWage() {
+    // Convert comma to dot, allow 7,50 as 7.50
+    return parseFloat(wageInput.value.replace(',', '.')) || 0;
+  }
 
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -197,11 +187,14 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
 
   document.getElementById('startBtn').addEventListener('click', () => running ? doPause() : doStart());
   document.getElementById('resetBtn').addEventListener('click', doReset);
-  document.getElementById('wage').addEventListener('input', refreshRate);
+  wageInput.addEventListener('input', refreshRate);
+  document.getElementById('funBtn').addEventListener('click', () => {
+    pausedTotal *= 1 + Math.random(); // random fun multiplier
+  });
 
   function doStart() {
-    const w = parseFloat(document.getElementById('wage').value);
-    if (isNaN(w) || w <= 0) return;
+    const w = parseWage();
+    if (w <= 0) return;
     running = true;
     startTime = performance.now();
     lastTick = startTime;
@@ -230,7 +223,7 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
   }
 
   function currentTotal() {
-    const w = parseFloat(document.getElementById('wage').value) || 0;
+    const w = parseWage();
     const perSec = w / 3600;
     return pausedTotal + perSec * ((performance.now() - startTime) / 1000);
   }
@@ -245,7 +238,7 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
   }
 
   function refreshRate() {
-    const w = parseFloat(document.getElementById('wage').value) || 0;
+    const w = parseWage();
     const ps = w / 3600;
     const cfg = { ms: ['per millisecond', ps/1000, 9], s: ['per second', ps, 6], m: ['per minute', ps*60, 4] }[mode];
     document.getElementById('rateLabel').textContent = cfg[0];
@@ -260,21 +253,14 @@ letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.15s, transform 0.
     if (!running) return;
     const now = performance.now();
     const total = currentTotal();
-
     document.getElementById('totalValue').textContent = '€' + total.toFixed(4);
     refreshRate();
-
-    // Progress bar per second
     document.getElementById('progressFill').style.width = ((now / 1000 % 1) * 100) + '%';
-
-    // Elapsed
     const ms = pausedElapsedMs + (now - startTime);
     const s = Math.floor(ms / 1000);
     document.getElementById('elapsed').textContent = Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
-
     rafId = requestAnimationFrame(loop);
   }
 </script>
-
 </body>
 </html>
