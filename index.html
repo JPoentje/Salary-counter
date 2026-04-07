@@ -135,16 +135,16 @@
   <div class="total-label">total earned</div>
   <div class="total-value" id="totalValue">€0.0000</div>
   <div class="divider"></div>
-  <div class="rate-label" id="rateLabel">per seconde</div>
+  <div class="rate-label" id="rateLabel">per second</div>
   <div class="rate-value" id="rateValue">€0.000000</div>
 </div>
 
 <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
 
 <div class="stats-row">
-  <div class="stat"><div class="s-lbl">Per minuut</div><div class="s-val" id="perMin">€0.00</div></div>
-  <div class="stat"><div class="s-lbl">Per uur</div><div class="s-val" id="perHour">€0.00</div></div>
-  <div class="stat"><div class="s-lbl">Tijd actief</div><div class="s-val" id="elapsed">0:00</div></div>
+  <div class="stat"><div class="s-lbl">Per minute</div><div class="s-val" id="perMin">€0.00</div></div>
+  <div class="stat"><div class="s-lbl">Per hourdiv><div class="s-val" id="perHour">€0.00</div></div>
+  <div class="stat"><div class="s-lbl">Time active</div><div class="s-val" id="elapsed">0:00</div></div>
 </div>
 
 <div class="btn-row">
@@ -200,7 +200,7 @@ function doReset() {
   document.getElementById('totalValue').textContent = '€0.0000';
   document.getElementById('elapsed').textContent = '0:00';
   document.getElementById('progressFill').style.width = '0%';
-  document.getElementById('statusTxt').textContent = 'Gestopt';
+  document.getElementById('statusTxt').textContent = 'Stopped';
   refreshRate();
 }
 
