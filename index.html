@@ -4,13 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="style.css">
 <title>Salary Meter</title>
+
+<link rel="stylesheet" href="style.css">
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="header"><h1>Salary Meter</h1></div>
+<div class="header">
+  <h1>Salary Meter</h1>
+</div>
+
+<a href="projects.html" class="nav-link">Projects</a>
 
 <div class="wage-row">
   <label>Hourly wage</label>
@@ -30,17 +37,32 @@
 <div class="main-card">
   <div class="total-label">Total earned</div>
   <div class="total-value" id="totalValue">€0.0000</div>
+
   <div class="divider"></div>
+
   <div class="rate-label" id="rateLabel">per second</div>
   <div class="rate-value" id="rateValue">€0.000000</div>
 </div>
 
-<div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
 
 <div class="stats-row">
-  <div class="stat"><div class="s-lbl">Per minute</div><div class="s-val" id="perMin">€0.00</div></div>
-  <div class="stat"><div class="s-lbl">Per hour</div><div class="s-val" id="perHour">€0.00</div></div>
-  <div class="stat"><div class="s-lbl">Time active</div><div class="s-val" id="elapsed">0:00</div></div>
+  <div class="stat">
+    <div class="s-lbl">Per minute</div>
+    <div class="s-val" id="perMin">€0.00</div>
+  </div>
+
+  <div class="stat">
+    <div class="s-lbl">Per hour</div>
+    <div class="s-val" id="perHour">€0.00</div>
+  </div>
+
+  <div class="stat">
+    <div class="s-lbl">Time active</div>
+    <div class="s-val" id="elapsed">0:00</div>
+  </div>
 </div>
 
 <div class="btn-row">
@@ -54,5 +76,6 @@
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
