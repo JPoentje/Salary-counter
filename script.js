@@ -1,4 +1,3 @@
-console.log("SCRIPT LOADED");
 <script>
   let mode = 's', running = false, rafId = null;
   let startTime = null, pausedTotal = 0, pausedElapsedMs = 0, lastTick = null;
