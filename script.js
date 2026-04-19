@@ -115,3 +115,51 @@ function loop() {
 
   rafId = requestAnimationFrame(loop);
 }
+// PROJECT SYSTEM
+
+let projects = JSON.parse(localStorage.getItem("projects")) || [];
+
+function saveProjects() {
+  localStorage.setItem("projects", JSON.stringify(projects));
+}
+
+function renderProjects() {
+  const list = document.getElementById("projectList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  projects.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "stat";
+
+    div.innerHTML = `
+      <div class="s-lbl">${p}</div>
+      <button onclick="deleteProject(${i})" style="margin-top:8px;">Delete</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function addProject() {
+  const input = document.getElementById("projectName");
+  const name = input.value.trim();
+
+  if (!name) return;
+
+  projects.push(name);
+  input.value = "";
+
+  saveProjects();
+  renderProjects();
+}
+
+function deleteProject(index) {
+  projects.splice(index, 1);
+  saveProjects();
+  renderProjects();
+}
+
+// AUTO LOAD
+renderProjects();
