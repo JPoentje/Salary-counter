@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Projects</title>
-
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="header">
   <h1>Projects</h1>
 </div>
 
-<a href="index.html" class="nav-link">Back</a>
+<a href="index.html" class="nav-link">← Back</a>
 
-<div class="main-card">
-  <div class="total-label">No projects yet</div>
+<!-- ADD PROJECT -->
+<div class="wage-row">
+  <label>New project</label>
+  <div class="wage-input-wrap">
+    <input id="projectName" placeholder="Name">
+  </div>
 </div>
 
+<div class="btn-row">
+  <button class="btn btn-start" onclick="addProject()">Add</button>
+</div>
+
+<!-- PROJECT LIST -->
+<div id="projectList" class="stats-row" style="grid-template-columns: 1fr;"></div>
+
+<script src="script.js"></script>
 </body>
-</html>
+</html> 
