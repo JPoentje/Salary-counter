@@ -163,3 +163,60 @@ function deleteProject(index) {
 
 // AUTO LOAD
 renderProjects();
+// ===== PROJECT SYSTEM (SAFE ADD) =====
+
+let projects = JSON.parse(localStorage.getItem("projects")) || [];
+
+function saveProjects() {
+  localStorage.setItem("projects", JSON.stringify(projects));
+}
+
+function renderProjects() {
+  const list = document.getElementById("projectList");
+  if (!list) return; // belangrijk → voorkomt errors op index.html
+
+  list.innerHTML = "";
+
+  projects.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "stat";
+
+    div.innerHTML = `
+      <div class="s-lbl">${p}</div>
+      <button class="btn btn-reset" onclick="deleteProject(${i})" style="margin-top:10px;">Remove</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function addProject() {
+  const input = document.getElementById("projectName");
+  if (!input) return;
+
+  const name = input.value.trim();
+  if (!name) return;
+
+  projects.push(name);
+  input.value = "";
+
+  saveProjects();
+  renderProjects();
+}
+
+function deleteProject(index) {
+  projects.splice(index, 1);
+  saveProjects();
+  renderProjects();
+}
+
+// WACHT TOT PAGINA GELADEN IS
+document.addEventListener("DOMContentLoaded", () => {
+  const addBtn = document.getElementById("addBtn");
+
+  if (addBtn) {
+    addBtn.addEventListener("click", addProject);
+  }
+
+  renderProjects();
+});
