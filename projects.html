@@ -14,21 +14,19 @@
 
 <a href="index.html" class="nav-link">← Back</a>
 
-<!-- ADD PROJECT -->
+<!-- INPUT -->
 <div class="wage-row">
-  <label>New project</label>
-  <div class="wage-input-wrap">
-    <input id="projectName" placeholder="Name">
-  </div>
+  <input id="projectName" placeholder="New project name..." style="width:100%">
 </div>
 
+<!-- BUTTON -->
 <div class="btn-row">
-  <button class="btn btn-start" onclick="addProject()">Add</button>
+  <button id="addBtn" class="btn btn-start">Add Project</button>
 </div>
 
-<!-- PROJECT LIST -->
+<!-- LIST -->
 <div id="projectList" class="stats-row" style="grid-template-columns: 1fr;"></div>
 
 <script src="script.js"></script>
 </body>
-</html> 
+</html>
